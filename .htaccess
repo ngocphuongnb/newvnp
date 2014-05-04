@@ -1,0 +1,7 @@
+Options +FollowSymLinks
+RewriteEngine on
+#RewriteBase /newvnp/
+RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteRule . /np/index.php [L] 
+RewriteRule ^(.*) index.php?n=$1
+

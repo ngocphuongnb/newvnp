@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<NodeTypes>
+	<NodeType name="article">
+		<Info>
+			<Title>Article</Title>
+			<Author>Nguyen Ngoc Phuong</Author>
+			<Require>article_category, article_group</Require>
+		</Info>
+		<Fields>
+			<Field name="title" type="text">
+				<Label>Title</Label>
+				<Length>255</Length>
+				<Require>1</Require>
+				<Filter>Utf8TrueType</Filter>
+				<Value>Enter title here</Value>
+				<DB>
+					<Type>varchar</Type>
+					<Length>255</Length>
+					<Collation>utf8_unicode_ci</Collation>
+					<AutoIncreament>0</AutoIncreament>
+				</DB>
+			</Field>
+			<Field name="url" type="text">
+				<Label>Url</Label>
+				<Length>255</Length>
+				<Require>1</Require>
+				<Filter>Helper|CleanUrlString</Filter>
+				<Value>Enter url here</Value>
+			</Field>
+			<Field name="description" type="textarea">
+				<Label>Description</Label>
+				<Length>255</Length>
+				<Require>1</Require>
+			</Field>
+			<Field name="body" type="html">
+				<Label>Content</Label>
+				<Length>255</Length>
+				<Require>1</Require>
+				<DB>
+					<Type>longtext</Type>
+				</DB>
+			</Field>
+			<Field name="status" type="selectbox">
+				<Label>Status</Label>
+				<Require>1</Require>
+				<Value>1</Value>
+				<Options>
+					<option value="0">Draft</option>
+					<option value="1">Publish</option>
+					<option value="2">Pending</option>
+				</Options>
+				<DB>
+					<Type>tinyint</Type>
+					<Length>4</Length>
+				</DB>
+			</Field>
+		</Fields>
+	</NodeType>
+	<NodeType name="article_category">
+		<Info>
+			<Title>Article Category</Title>
+			<Author>Nguyen Ngoc Phuong</Author>
+			<Require>article_category</Require>
+		</Info>
+		<Fields>
+			<Field name="title" type="text">
+				<Label>Title</Label>
+				<Length>255</Length>
+				<Require>1</Require>
+				<Filter>Utf8TrueType</Filter>
+				<Value>Enter title here</Value>
+				<DB>
+					<Type>varchar</Type>
+					<Length>255</Length>
+					<Collation>utf8_unicode_ci</Collation>
+					<AutoIncreament>0</AutoIncreament>
+				</DB>
+			</Field>
+			<Field name="url" type="text">
+				<Label>Url</Label>
+				<Length>255</Length>
+				<Require>1</Require>
+				<Filter>Helper|CleanUrlString</Filter>
+				<Value>Enter url here</Value>
+			</Field>
+			<Field name="description" type="textarea">
+				<Label>Description</Label>
+				<Length>255</Length>
+				<Require>1</Require>
+			</Field>
+		</Fields>
+	</NodeType>
+	<NodeType name="article_group">
+		<Info>
+			<Title>Article Group</Title>
+			<Author>Nguyen Ngoc Phuong</Author>
+			<Require>article_group</Require>
+		</Info>
+		<Fields>
+			<Field name="title" type="text">
+				<Label>Title</Label>
+				<Length>255</Length>
+				<Require>1</Require>
+				<Filter>Utf8TrueType</Filter>
+				<Value>Enter title here</Value>
+				<DB>
+					<Type>varchar</Type>
+					<Length>255</Length>
+					<Collation>utf8_unicode_ci</Collation>
+					<AutoIncreament>0</AutoIncreament>
+				</DB>
+			</Field>
+			<Field name="url" type="text">
+				<Label>Url</Label>
+				<Length>255</Length>
+				<Require>1</Require>
+				<Filter>Helper|CleanUrlString</Filter>
+				<Value>Enter url here</Value>
+			</Field>
+			<Field name="description" type="textarea">
+				<Label>Description</Label>
+				<Length>255</Length>
+				<Require>1</Require>
+			</Field>
+		</Fields>
+	</NodeType>
+</NodeTypes>
