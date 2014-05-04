@@ -1,0 +1,1 @@
+<?php if(!class_exists('ntpl')){exit;}?><input data-field-type="<?php echo $Field["type"];?>" type="hidden" class="form-control" name="Node[<?php echo $Field["name"];?>]" id="NodeField_<?php echo $Field["name"];?>" value="<?php echo $Field["value"];?>" placeholder="<?php echo $Field["label"];?>"/>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<NodeTypes uf8="ư">
+<NodeType name="article" id="article">
+        <Label>Bài viết</Label>
+        
+            <Field name="title" type="text">
+                <Label>Title</Label>
+                <Value>Title Value</Value>
+                <MaxLengh>100</MaxLengh>
+            </Field>
+            
+            <Field name="content" type="html">
+                <Label>Content</Label>
+                <Value/>
+                <MaxLengh>-1</MaxLengh>
+            </Field>
+            
+            <Field name="image" type="image">
+                <Label>Feature Image</Label>
+                <Value/>
+                <MaxLengh>100</MaxLengh>
+            </Field>
+            
+            <Field name="category" type="dynamic">
+                <Label>Cateogry</Label>
+                <Refer>category</Refer>
+                <Value/>
+                <MaxLengh>100</MaxLengh>
+            </Field>
+            
+            <Field name="tag" type="dynamic">
+                <Label>Tag</Label>
+                <Refer>tag</Refer>
+                <Value/>
+                <MaxLengh>100</MaxLengh>
+            </Field>
+            
+            <Field name="author" type="text">
+                <Label>Author Name</Label>
+                <Value>Author Value</Value>
+                <MaxLengh>100</MaxLengh>
+            </Field>
+            
+            <Field name="Date" type="date">
+                <Label>Date Published</Label>
+                <Value/>
+                <MaxLengh>100</MaxLengh>
+            </Field>
+      
+        
+    <Field type="text" name="new_field"><Label>New Field</Label><Value>New Value</Value><MaxLengh>-1</MaxLengh></Field></NodeType>
+
+    <NodeType name="article_category" id="article_category">
+            <Label>Chuyên mục bài viết</Label>
+            
+            
+            
+            <Field name="Description" type="html">
+                <Label>Description</Label>
+                <Value/>
+                <MaxLengh>-1</MaxLengh>
+            </Field>
+            
+            
+            
+            <Field name="parrent_category" type="dynamic">
+                <Label>Parrent Category</Label>
+                <Refer>category</Refer>
+                <Value/>
+                <MaxLengh>-1</MaxLengh>
+            </Field>
+
+            
+            <Field name="url" type="text">
+                <Label>Category URL</Label>
+                <Value/>
+                <MaxLengh>-1</MaxLengh>
+            </Field>
+            
+        
+        
+    </NodeType>
+
+    
+    
+    
+</NodeTypes>

@@ -1,0 +1,9 @@
+# Base ignore
+
+/.project
+
+/.buildpath
+
+/.settings
+/.clients/data/cache/*
+/.clients/data/session/*

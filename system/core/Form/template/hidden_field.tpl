@@ -1,0 +1,1 @@
+<input data-field-type="{$Field.type}" type="hidden" class="form-control" name="Node[{$Field.name}]" id="NodeField_{$Field.name}" value="{$Field.value}" placeholder="{$Field.label}"/>
