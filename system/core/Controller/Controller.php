@@ -16,6 +16,25 @@ abstract class Controller
 	}
 	public function HookAfter($Target, $Action) {
 	}
+	public function UseCssComponents($Components){
+		Theme::AddCssComponent($Components);
+	}
+	public function Render($Content, $ConfigArray = array()) {
+		$Config = array(	'layout'		=> Theme::$Config['layout'],
+							'theme'			=> Theme::$Config['theme'],
+							're_compile'	=> false,
+							'is_cache'		=> false,
+						);
+		$Config = array_merge($Config, $ConfigArray);
+		Theme::$BodyContent .= $Content;
+		if($Config['layout'] != '') Theme::$Working['layout']	= $Config['layout'];
+		//else Theme::$Working['layout'] = Theme::$Config['layout'];
+		if($Config['theme'] != '') Theme::$Working['theme']	= $Config['theme'];
+		//else Theme::$Working['theme'] = Theme::$Config['theme'];
+		Theme::$Working['re_compile']	= $Config['re_compile'];
+		Theme::$Working['is_cache']	= $Config['is_cache'];
+		//n(Theme::$Working);
+	}
 }
 
 ?>

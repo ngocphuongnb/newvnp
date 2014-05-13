@@ -13,6 +13,7 @@ define('APPLICATION_PATH', BASE_PATH . APPLICATION_DIR . DIRECTORY_SEPARATOR);
 define('ADMIN_SECTION', false);
 
 require BASE_PATH . 'base.php';
+define('GLOBAL_DATA_DIR', '/data/');
 Boot::Run();
 
 echo ( microtime() - $stimer);

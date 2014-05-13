@@ -76,6 +76,11 @@ class Boot {
 		G::$RouteObj	= Router::Start(rtrim(BASE_DIR, '/'));
 		G::$Session		= new Session();
 		G::$User		= new User();
+		Theme::Config(array(
+						'theme_root'		=> DATA_PATH . 'theme' . DIRECTORY_SEPARATOR,
+						'default_theme'		=> 'vnp',
+						'default_layout'	=> 'left.body'
+					));
 		TPL::Config(	BASE_DIR,
 						TEMPLATE_PATH,
 						CACHE_PATH . 'compiled' . DIRECTORY_SEPARATOR,
@@ -139,7 +144,10 @@ class Boot {
 					->SetDir('CacheDir', CACHE_PATH . 'html' . DIRECTORY_SEPARATOR)
 					->Output();
 			}
-			else Boot::ControllerAction();
+			else {
+				Boot::ControllerAction();
+				Theme::Output();
+			}
 		}
 	}
 	
@@ -148,10 +156,10 @@ class Boot {
 			require SYSTEM_PATH . 'core/Controller/Controller.php';
 			$Controller = G::$Route['params']['controller'];
 			isset(G::$Route['params']['action']) ? $Action = G::$Route['params']['action'] : $Action = 'main';
-			isset(G::$Route['params']['params'])? $Params = Router::ExtractParams(G::$Route['params']['params'])
-												: $Params = array();
-			if(@include(CONTROLLER_PATH . $Controller . DIRECTORY_SEPARATOR . $Controller . '.php')) {
-				
+			isset(G::$Route['params']['params']) ? $Params = Router::ExtractParams(G::$Route['params']['params'])
+												 : $Params = array();
+			if(file_exists(CONTROLLER_PATH . $Controller . DIRECTORY_SEPARATOR . $Controller . '.php')) {
+				require CONTROLLER_PATH . $Controller . DIRECTORY_SEPARATOR . $Controller . '.php';
 				TPL::Config(	BASE_DIR,
 								CONTROLLER_PATH . $Controller . DIRECTORY_SEPARATOR . 'template' . DIRECTORY_SEPARATOR,
 								CACHE_PATH . 'compiled' . DIRECTORY_SEPARATOR,

@@ -56,6 +56,11 @@ class Router
 		return Router::$Router->generate($RouteName, $Params);
 	}
 	
+	static function GenerateThisRoute()
+	{
+		return Router::$Router->generate(G::$Route['name'], G::$Route['params']);
+	}
+	
 	static function BasePath()
 	{
 		return Router::$Router->GetBasePath();
@@ -63,16 +68,13 @@ class Router
 	
 	static function ExtractParams($ParamsString)
 	{
-		if(!empty($ParamsString))
-		{
+		if(!empty($ParamsString)) {
 			$ExtractedParams = array();
 			$_ParamsArray = explode('/', $ParamsString);
-			if( sizeof($_ParamsArray) % 2 != 0 ) $_ParamsArray[] = 0;
-			if(!empty($_ParamsArray))
-			{
+			if( sizeof($_ParamsArray) % 2 != 0 ) array_unshift($_ParamsArray, ROUTER_EXTRA_KEY);
+			if(!empty($_ParamsArray)) {
 				$KeyIndex = 0;
-				while( isset($_ParamsArray[$KeyIndex]) )
-				{
+				while(isset($_ParamsArray[$KeyIndex])) {
 					$ExtractedParams[$_ParamsArray[$KeyIndex]] = $_ParamsArray[$KeyIndex+1];
 					$KeyIndex += 2;
 				}

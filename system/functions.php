@@ -3,14 +3,18 @@
 function n($str)
 {
 	echo '<pre>';
+	echo '<code class="VNP_CodeBlock">';
 	print_r($str);
+	echo '</code>';
 	echo '</pre>';
 }
 
 function p($data)
 {
-	$return = '<pre>' . print_r($data, true) . '</pre>';
-	return $return;
+	$str = '<pre><code class="VNP_CodeBlock">';
+	$str .= print_r($data, true);
+	$str .= '</code></pre>';
+	Theme::$Hook['before_body'] .= $str;
 }
 
 ?>

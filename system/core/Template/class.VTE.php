@@ -75,7 +75,7 @@ class VTE
 		return $this;
 	}
 	
-	public function Output($Return = false, $ReturnCompiled = false) {
+	public function Output($Return = true, $ReturnCompiled = false) {
 		$TPLFileName = rtrim(basename($this->TPLFilePath), $this->TPLFileExt);
 		$EncodedFileName = $TPLFileName . '_' . md5($this->TPLFilePath);
 		$this->CompiledFilePath = $this->_CompiledDir . $EncodedFileName . '.php';
@@ -369,10 +369,10 @@ class VTE
 				$ArrayElement = $this->VariableTrueForm('$' . $Code['ArrayElement']);
 				if(isset($Code['ArrayKey'])) {
 					$ArrayKey = $this->VariableTrueForm('$' . $Code['ArrayKey']);
-					$CompiledCode[] = "<?php foreach( $Array as $ArrayKey => $ArrayElement) { ?>";
+					$CompiledCode[] = "<?php foreach($Array as $ArrayKey => $ArrayElement) { ?>";
 				}
 				else
-					$CompiledCode[] = "<?php foreach( $Array as $ArrayElement) { ?>";
+					$CompiledCode[] = "<?php foreach($Array as $ArrayElement) { ?>";
 			}
 			//close For tag
 			elseif( strpos( $Html, '{/for}' ) !== FALSE ) {

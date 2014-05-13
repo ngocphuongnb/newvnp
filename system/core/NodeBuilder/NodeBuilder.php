@@ -8,6 +8,7 @@ class NodeBuilder
 	public $NodeTypes = array();
 	public $RequiredNodeTypes = array();
 	public $NodeTypeMissed = array();
+	public $CacheFileExtension = '_node_builder.txt';
 	public function __construct() {
 	}
 	public function AAA() {
@@ -15,7 +16,7 @@ class NodeBuilder
 	}
 	
 	public function LoadXmlNodeFile($XmlFilePath, $Reload = false) {
-		$CacheFile = self::$NodeBuilderCachePath . md5($XmlFilePath);
+		$CacheFile = self::$NodeBuilderCachePath . md5($XmlFilePath) . $this->CacheFileExtension;
 		if($Reload || !file_exists($CacheFile)) {
 			$XmlObj = new DOMDocument();
 			$XmlObj->load($XmlFilePath);
@@ -25,10 +26,10 @@ class NodeBuilder
 			$_Temp['NodeTypes'] = $this->NodeTypes;
 			$_Temp['RequiredNodeTypes'] = $this->RequiredNodeTypes;
 			$_Temp['NodeTypeMissed'] = $this->NodeTypeMissed;
-			file_put_contents($CacheFile, serialize($_Temp));
+			File::Create($CacheFile, serialize($_Temp));
 		}
 		else {
-			$_Temp = unserialize(file_get_contents($CacheFile));
+			$_Temp = unserialize(File::GetContent($CacheFile));
 			$this->NodeTypes = $_Temp['NodeTypes'];
 			$this->RequiredNodeTypes = $_Temp['RequiredNodeTypes'];
 			$this->NodeTypeMissed = $_Temp['NodeTypeMissed'];
@@ -41,10 +42,16 @@ class NodeBuilder
 			$NodeTypeName = $NodeType->getAttribute('name');
 			$NodeTypeInfo = $NodeType->getElementsByTagName('Info');
 			$NodeTypeInfo = $NodeTypeInfo->item(0);
+			$GetRequire = $NodeTypeInfo->getElementsByTagName('Require');
+			if($GetRequire->length > 0) {
+				$R = $GetRequire->item(0);
+				$require = array('node_type'	=> $this->GetFirstElementIfExisted($R, 'Node'));
+			}
+			else $require = array('node_type' => '');
 			$NodeTypeInfo = array(	'title'		=> $NodeTypeInfo->getElementsByTagName('Title')->item(0)->nodeValue,
 									'author'	=> $NodeTypeInfo->getElementsByTagName('Author')->item(0)->nodeValue,
-									'require'	=> $this->GetFirstElementIfExisted($NodeTypeInfo, 'Require'));
-			$this->RequiredNodeTypes[$NodeTypeName] = array_map('trim',array_filter(explode(',',$NodeTypeInfo['require'])));
+									'require'	=> $require);
+			$this->RequiredNodeTypes[$NodeTypeName] = array_map('trim',array_filter(explode(',',$NodeTypeInfo['require']['node_type'])));
 			$NodeFields = $this->ExtractNodeFields($NodeType->getElementsByTagName('Fields')->item(0));
 			$this->NodeTypes[$NodeTypeName] = array('NodeTypeInfo'	=> $NodeTypeInfo,
 													'NodeFields'	=> $NodeFields);
@@ -55,8 +62,11 @@ class NodeBuilder
 		$FieldsCollection = $XmlFieldsObject->getElementsByTagName('Field');
 		$Fields = array();
 		foreach($FieldsCollection as $FieldObject) {
+			$inform = $FieldObject->getAttribute('inform');
+			if(empty($inform)) $inform = 1;
 			$_Field['name'] = $FieldObject->getAttribute('name');
 			$_Field['type'] = $FieldObject->getAttribute('type');
+			$_Field['inform'] = $inform;
 			$_Field['label'] = $this->GetFirstElementIfExisted($FieldObject, 'Label');
 			$_Field['require'] = $this->GetFirstElementIfExisted($FieldObject, 'Require');
 			$_Field['filter'] = $this->GetFirstElementIfExisted($FieldObject, 'Filter');
