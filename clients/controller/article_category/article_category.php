@@ -12,11 +12,11 @@ class article_category extends Controller {
 		$Vars = array (
   'var1' => 
   array (
-    'Value' => 'Chỉ Còn Những Mùa Nhớ 444',
+    'Value' => 'Enter title here',
   ),
   'var2' => 
   array (
-    'Value' => 'chi-con-nhung-mua-nho-4444',
+    'Value' => 'Enter url here',
   ),
   'var3' => 
   array (
@@ -24,7 +24,7 @@ class article_category extends Controller {
   ),
   'var4' => 
   array (
-    'Value' => '',
+    'Value' => 'article_category',
   ),
 );
 		function PrepareOptions_vnpd8af29fe2fa7e61f1975893abfff36f7($Row) {
