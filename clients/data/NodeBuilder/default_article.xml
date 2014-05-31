@@ -1,138 +1,172 @@
 <?xml version="1.0" encoding="utf-8"?>
 <NodeTypes>
-	<NodeType name="article">
-		<Info>
-			<Title>Article</Title>
-			<Author>Nguyen Ngoc Phuong</Author>
-			<Require>
-				<Node>article_category, article_group</Node>
-			</Require>
-		</Info>
-		<Fields>
-			<Field name="title" type="text" inform="1">
-				<Label>Title</Label>
-				<Length>255</Length>
-				<Require>1</Require>
-				<Filter>Utf8TrueType</Filter>
-				<Value>Enter title here</Value>
-				<DB>
-					<Type>varchar</Type>
-					<Length>255</Length>
-					<Collation>utf8_unicode_ci</Collation>
-					<AutoIncreament>0</AutoIncreament>
-				</DB>
-			</Field>
-			<Field name="url" type="text">
-				<Label>Url</Label>
-				<Length>255</Length>
-				<Require>1</Require>
-				<Filter>Helper|CleanUrlString</Filter>
-				<Value>Enter url here</Value>
-			</Field>
-			<Field name="description" type="textarea">
-				<Label>Description</Label>
-				<Length>255</Length>
-				<Require>1</Require>
-			</Field>
-			<Field name="body" type="html">
-				<Label>Content</Label>
-				<Length>255</Length>
-				<Require>1</Require>
-				<DB>
-					<Type>longtext</Type>
-				</DB>
-			</Field>
-			<Field name="status" type="selectbox">
-				<Label>Status</Label>
-				<Require>1</Require>
-				<Value>1</Value>
-				<Options>
-					<option value="0">Draft</option>
-					<option value="1">Publish</option>
-					<option value="2">Pending</option>
-				</Options>
-				<DB>
-					<Type>tinyint</Type>
-					<Length>4</Length>
-				</DB>
-			</Field>
-			<Field name="author" type="selectbox" inform="-1">
-				<Label>Author</Label>
-				<Require>1</Require>
-				<Value>1</Value>
-				<DB>
-					<Type>int</Type>
-					<Length>11</Length>
-				</DB>
-			</Field>
-		</Fields>
-	</NodeType>
-	<NodeType name="article_category">
-		<Info>
-			<Title>Article Category</Title>
-			<Author>Nguyen Ngoc Phuong</Author>
-			<Require>article_category</Require>
-		</Info>
-		<Fields>
-			<Field name="title" type="text">
-				<Label>Title</Label>
-				<Length>255</Length>
-				<Require>1</Require>
-				<Filter>Utf8TrueType</Filter>
-				<Value>Enter title here</Value>
-				<DB>
-					<Type>varchar</Type>
-					<Length>255</Length>
-					<Collation>utf8_unicode_ci</Collation>
-					<AutoIncreament>0</AutoIncreament>
-				</DB>
-			</Field>
-			<Field name="url" type="text">
-				<Label>Url</Label>
-				<Length>255</Length>
-				<Require>1</Require>
-				<Filter>Helper|CleanUrlString</Filter>
-				<Value>Enter url here</Value>
-			</Field>
-			<Field name="description" type="textarea">
-				<Label>Description</Label>
-				<Length>255</Length>
-				<Require>1</Require>
-			</Field>
-		</Fields>
-	</NodeType>
-	<NodeType name="article_group">
-		<Info>
-			<Title>Article Group</Title>
-			<Author>Nguyen Ngoc Phuong</Author>
-			<Require>article_group</Require>
-		</Info>
-		<Fields>
-			<Field name="title" type="text">
-				<Label>Title</Label>
-				<Length>255</Length>
-				<Require>1</Require>
-				<Filter>Utf8TrueType</Filter>
-				<Value>Enter title here</Value>
-				<DB>
-					<Type>varchar</Type>
-					<Length>255</Length>
-					<Collation>utf8_unicode_ci</Collation>
-					<AutoIncreament>0</AutoIncreament>
-				</DB>
-			</Field>
-			<Field name="url" type="text">
-				<Label>Url</Label>
-				<Length>255</Length>
-				<Require>1</Require>
-				<Filter>Helper|CleanUrlString</Filter>
-				<Value>Enter url here</Value>
-			</Field>
-			<Field name="description" type="textarea">
-				<Label>Description</Label>
-				<Length>255</Length>
-				<Require>1</Require>
-			</Field>
-		</Fields>
-	</NodeType>
+  <NodeType name="article">
+    <Info>
+      <Title>Article</Title>
+      <Author>Nguyen Ngoc Phuong</Author>
+      <Require>
+        <Node>article_category, article_group</Node>
+      </Require>
+      <DB>
+        <Engine>MyISAM</Engine>
+        <CollateKey>utf8</CollateKey>
+        <Collate>utf8_unicode_ci</Collate>
+        <AutoIncrement>0</AutoIncrement>
+      </DB>
+    </Info>
+    <Fields>
+      <Field name="title" type="text" inform="1">
+        <Label>Title</Label>
+        <Require>1</Require>
+        <Filter>Utf8TrueType</Filter>
+        <Value>Enter title here</Value>
+        <DB>
+          <Type>VARCHAR</Type>
+          <Length>200</Length>
+          <Collation>utf8_unicode_ci</Collation>
+          <AutoIncrement/>
+          <IsUnique/>
+        </DB>
+      </Field>
+      <Field name="category" type="referer" inform="1">
+        <Label>Category</Label>
+        <Require>0</Require>
+        <Filter/>
+        <Value>article_category</Value>
+        <Referer node_type="article_category" node_field="title" display="multi_selectbox"/>
+        <DB>
+          <Type>VARCHAR</Type>
+          <Length>255</Length>
+          <Collation>utf8_unicode_ci</Collation>
+          <AutoIncrement/>
+          <IsUnique/>
+        </DB>
+      </Field>
+      <Field name="url" type="url" inform="1">
+        <Label>Url</Label>
+        <Require>1</Require>
+        <Filter>Filter::CleanUrlString|str_replace:'haha','hihi',[THIS_FIELD_VALUE]</Filter>
+        <Value/>
+        <DB>
+          <Type/>
+          <Length>255</Length>
+          <Collation/>
+          <IsUnique>1</IsUnique>
+        </DB>
+      </Field>
+      <Field name="description" type="textarea" inform="1">
+        <Label>Description</Label>
+        <Require>1</Require>
+        <Filter/>
+        <Value/>
+        <DB>
+          <Type/>
+          <Length>255</Length>
+          <Collation/>
+          <AutoIncrement/>
+          <IsUnique/>
+        </DB>
+      </Field>
+      <Field name="body" type="html" inform="1">
+        <Label>Content</Label>
+        <Require>1</Require>
+        <Filter/>
+        <Value/>
+        <DB>
+          <Type>longtext</Type>
+          <Length>255</Length>
+          <Collation/>
+          <AutoIncrement/>
+          <IsUnique/>
+        </DB>
+      </Field>
+      <Field name="status" type="single_value" inform="1">
+        <Label>Status</Label>
+        <Require>1</Require>
+        <Filter/>
+        <Value>1</Value>
+        <Options display="single_selectbox">
+          <option value="0">Draft</option>
+          <option value="1">Publish</option>
+          <option value="2">Pending</option>
+        </Options>
+        <DB>
+          <Type>TINYINT</Type>
+          <Length>4</Length>
+          <Collation/>
+          <AutoIncrement/>
+          <IsUnique/>
+        </DB>
+      </Field>
+      <Field name="author" type="single_value" inform="1">
+        <Label>Color</Label>
+        <Require>1</Require>
+        <Filter/>
+        <Value/>
+        <Options display="single_selectbox">
+          <option value="red">Red</option>
+        </Options>
+        <DB>
+          <Type/>
+          <Length/>
+          <Collation/>
+          <AutoIncrement/>
+          <IsUnique/>
+        </DB>
+      </Field>
+      <Field name="new_field" type="text" inform="1">
+        <Label>New Field</Label>
+        <Require>0</Require>
+        <Filter>Utf8TrueType</Filter>
+        <Value/>
+        <DB>
+          <Type>VARCHAR</Type>
+          <Length>255</Length>
+          <Collation/>
+          <AutoIncrement/>
+          <IsUnique/>
+        </DB>
+      </Field>
+      <Field name="image" type="file" inform="1">
+        <Label>Image</Label>
+        <Require>0</Require>
+        <Filter/>
+        <Value/>
+        <DB>
+          <Type/>
+          <Length/>
+          <Collation/>
+          <AutoIncrement/>
+          <IsUnique/>
+        </DB>
+      </Field>
+      <Field name="source" type="text" inform="1">
+        <Label>source</Label>
+        <Require>0</Require>
+        <Filter/>
+        <Value/>
+        <DB>
+          <Type/>
+          <Length/>
+          <Collation/>
+          <AutoIncrement/>
+          <IsUnique/>
+        </DB>
+      </Field>
+      <Field name="main_catid" type="referer" inform="1">
+        <Label>Main category</Label>
+        <Require>1</Require>
+        <Filter/>
+        <Value>article_category</Value>
+        <Referer node_type="article_category" node_field="title" display="single_selectbox"/>
+        <DB>
+          <Type/>
+          <Length/>
+          <Collation/>
+          <AutoIncrement/>
+          <IsUnique/>
+        </DB>
+      </Field>
+    </Fields>
+  </NodeType>
 </NodeTypes>

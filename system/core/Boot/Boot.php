@@ -142,10 +142,11 @@ class Boot {
 					->SetDir('TPLFileDir', TEMPLATE_PATH)
 					->SetDir('CompiledDir', CACHE_PATH . 'compiled' . DIRECTORY_SEPARATOR)
 					->SetDir('CacheDir', CACHE_PATH . 'html' . DIRECTORY_SEPARATOR)
-					->Output();
+					->Output(false);
 			}
 			else {
 				Boot::ControllerAction();
+				Theme::$AjaxSession = G::$Registry['Ajax'];
 				Theme::Output();
 			}
 		}
@@ -155,7 +156,7 @@ class Boot {
 		if(empty(G::$Route) || G::$Route['target'] == 'ControllerSection') {
 			require SYSTEM_PATH . 'core/Controller/Controller.php';
 			$Controller = G::$Route['params']['controller'];
-			isset(G::$Route['params']['action']) ? $Action = G::$Route['params']['action'] : $Action = 'main';
+			isset(G::$Route['params']['action']) ? $Action = G::$Route['params']['action'] : $Action = 'Main';
 			isset(G::$Route['params']['params']) ? $Params = Router::ExtractParams(G::$Route['params']['params'])
 												 : $Params = array();
 			if(file_exists(CONTROLLER_PATH . $Controller . DIRECTORY_SEPARATOR . $Controller . '.php')) {
@@ -166,12 +167,17 @@ class Boot {
 								CACHE_PATH . 'html' . DIRECTORY_SEPARATOR,
 								CACHE_PATH . 'compiled' . DIRECTORY_SEPARATOR
 							);
-				
-				G::$Registry['Params'] = $Params;
-				G::$Registry['Controller'] = new $Controller;
+				G::$Registry['Ajax']		= isset(G::$Route['ajax']) ? G::$Route['ajax'] : false;
+				G::$Registry['Params']		= $Params;
+				G::$Registry['ControllerAction']	= $Action;
+				G::$Registry['Controller']	= new $Controller;
+				G::$Registry['Controller']->ControllerInitializer();
+				if(method_exists(G::$Registry['Controller'], 'Construct')) G::$Registry['Controller']->Construct();
 				G::$Registry['Controller']->$Action();
 			}
-			else trigger_error(Boot::ERROR_CONTROLLER_NOT_FOUND);
+			else {
+				//trigger_error(Boot::ERROR_CONTROLLER_NOT_FOUND);
+			}
 		}
 	}
 }

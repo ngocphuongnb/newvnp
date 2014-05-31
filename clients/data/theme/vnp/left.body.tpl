@@ -16,13 +16,42 @@
     <body>
     	<div class="container-fluid">
         	<div class="row" id="AdminBoard">
+            	<header>
+                	<a href="{#BASE_DIR}" class="VNP_Logo"></a>
+                </header>
             	{$Hook.before_body}
-            	<div class="col-xs-6 col-md-4" id="left-sidebar" role="navigation">
-                	<ul id="admin-functions">
-                    	
+            	<div class="col-md-2" id="VNP_LeftBar" role="navigation">
+                	<ul id="AdminMenus">
+                    	<li><a href="{#BASE_DIR}">Main board</a></li>
+                        <li><a href="{#BASE_DIR}NodeBuilderGUI/">Node builder</a></li>
+                        <li><a href="{#BASE_DIR}User/">User</a></li>
+                        <li><a href="{#BASE_DIR}logout">Logout</a></li>
                     </ul>
                 </div>
-                <div class="col-xs-12 col-md-8 box" id="main-board">
+                <div class="col-md-10 box" id="main-board">
+                	{if(!empty($PageInfo) || !empty($FeaturedPanel))}
+                	<div class="FeaturedPanel clearfix">
+                        {if(!empty($PageInfo))}
+                        <span class="VNP_PageInfo">{$PageInfo}</span>
+                        {/if}
+                        {if(!empty($FeaturedPanel))}
+                        <ul class="FeaturedButtons">
+                            {for $FP in $FeaturedPanel}
+                            <li>
+                                <a href="{$FP.url}" title="{$FP.text}">
+                                    <span class="glyphicon glyphicon-{$FP.class}"></span>&nbsp;{$FP.text}
+                                </a>
+                            </li>
+                            {/for}
+                        </ul>
+                        {/if}
+                  	</div>
+                    {/if}
+                	{for $_notifyType in $Notify}
+                    	{for $_notify in $_notifyType}
+                    		<div class="alert alert-{$_notify.type}">{$_notify.content}</div>
+                       	{/for}
+                    {/for}
                 	{$BODY}
                 </div>
             </div>

@@ -5,11 +5,11 @@
         <title>User Login</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" type="text/css" href="{#STATIC_FILE_SERVER}data/library/bootstrap/normalize.min.css" />
-        <link rel="stylesheet" type="text/css" href="{#STATIC_FILE_SERVER}data/library/bootstrap/bootstrap-theme.min.css" />
-        <link rel="stylesheet" type="text/css" href="{#STATIC_FILE_SERVER}data/library/bootstrap/Forms/css/bootstrap.min.css" />
-        <link rel="stylesheet" type="text/css" href="{#STATIC_FILE_SERVER}data/library/bootstrap/Buttons/css/bootstrap.min.css" />
-        <link rel="stylesheet" type="text/css" href="{#STATIC_FILE_SERVER}{#APPLICATION_DIR}/data/template/css/login.css" />
+        <link rel="stylesheet" type="text/css" href="{#GLOBAL_DATA_DIR}library/bootstrap/normalize.min.css" />
+        <link rel="stylesheet" type="text/css" href="{#GLOBAL_DATA_DIR}library/bootstrap/bootstrap-theme.min.css" />
+        <link rel="stylesheet" type="text/css" href="{#GLOBAL_DATA_DIR}library/bootstrap/Forms/css/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="{#GLOBAL_DATA_DIR}library/bootstrap/Buttons/css/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="/{#APPLICATION_DIR}/data/template/css/login.css" />
     </head>
     
     <body>

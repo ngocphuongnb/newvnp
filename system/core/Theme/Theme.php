@@ -43,10 +43,17 @@ class Theme
 	static $ThemeVariables = array();
 	static $Config = array();
 	static $Working = array();
+	static $FeaturedPanel = array();
+	static $AjaxSession = false;
 	
 	public function __construct()
 	{
 	}
+	
+	/*static function Assign($Name, $Value = NULL) {
+		is_array($Name) ? Theme::$VNP_ThemeVariables = array_merge(Theme::$VNP_ThemeVariables, $Name)
+						: Theme::$VNP_ThemeVariables[$Name] = $Value;
+	}*/
 	
 	static function Config($ConfigArray = array()) {
 		Theme::$Config = array(	'theme_root'		=> dirname(__FILE__),
@@ -83,20 +90,13 @@ class Theme
 	static function AddCssComponent($Components = '') {
 		if(!empty($Components))
 			if(defined('IS_AJAX'))
-				Theme::$AjaxCssComponents = array_merge(Theme::$AjaxCssComponents, array_unique(explode(',', $Components)));
+				Theme::$AjaxCssComponents = array_unique(array_merge(Theme::$AjaxCssComponents, explode(',', $Components)));
 			else
-				Theme::$CssComponents = array_merge(Theme::$CssComponents, array_unique(explode(',', $Components)));
+				Theme::$CssComponents = array_unique(array_merge(Theme::$CssComponents, explode(',', $Components)));
 	}	
 	static function Assign($variable, $value = NULL) {
 		if(is_array($variable)) Theme::$ThemeVariables += $variable;
 		else Theme::$ThemeVariables[$variable] = $value;
-	}	
-	static function PrepareVariables() {
-		//Theme::JsHeader('VNP_Object', 'var VNP = new BaseObject("' . $BaseUrl . '");', 'inline');
-		Theme::$Hook['header'] = Theme::GetJs('JsHeader');
-		Theme::$Hook['header'] .= Theme::GetCss('CssHeader');
-		Theme::$Hook['footer'] = Theme::GetJs('JsFooter');
-		Theme::$Hook['footer'] .= Theme::GetCss('CssFooter');
 	}	
 	static function JsHeader($Name, $JsString, $Type = 'file') {
 		if(defined('IS_AJAX'))
@@ -167,15 +167,33 @@ class Theme
 						CACHE_PATH . 'compiled' . DIRECTORY_SEPARATOR
 					);
 	}
+	static function PrepareVariables() {
+		Theme::JsFooter('JsBaseFunctions', APPLICATION_DATA_DIR . 'js/base.js');
+		Theme::JsFooter('VNP_Object', 'var VNP = new BaseObject("' . BASE_DIR . '");', 'inline');
+		Theme::$Hook['header'] = Theme::GetJs('JsHeader');
+		Theme::$Hook['header'] .= Theme::GetCss('CssHeader');
+		Theme::$Hook['footer'] = Theme::GetJs('JsFooter');
+		Theme::$Hook['footer'] .= Theme::GetCss('CssFooter');
+		Theme::Assign('Notify', Helper::GetNotify());
+		Theme::Assign('FeaturedPanel', Helper::GetFeaturedPanel());
+		Theme::Assign('PageInfo', Helper::GetPageInfo());
+	}	
 	static function Output() {
-		Theme::PrepareTheme();
-		Theme::PrepareVariables();
-		$Output = TPL::File(Theme::$Working['layout'], Theme::$Working['re_compile'], Theme::$Working['is_cache']);
-		$Output->Assign('META', Theme::$MetaTags);
-		$Output->Assign('CssComponents', Theme::GenerateCssComponents('CssComponents'));
-		$Output->Assign('Hook', Theme::$Hook);
-		$Output->Assign('BODY', Theme::$BodyContent);
-		$Output->Output(false);
+		if(in_array(Theme::$AjaxSession, array('text', 'json'))) {
+			echo Theme::$BodyContent;
+			exit();
+		}
+		else {
+			Theme::PrepareTheme();
+			Theme::PrepareVariables();
+			$Output = TPL::File(Theme::$Working['layout'], Theme::$Working['re_compile'], Theme::$Working['is_cache']);
+			$Output->Assign(Theme::$ThemeVariables);
+			$Output->Assign('META', Theme::$MetaTags);
+			$Output->Assign('CssComponents', Theme::GenerateCssComponents('CssComponents'));
+			$Output->Assign('Hook', Theme::$Hook);
+			$Output->Assign('BODY', Theme::$BodyContent);
+			$Output->Output(false);
+		}
 	}
 }
 

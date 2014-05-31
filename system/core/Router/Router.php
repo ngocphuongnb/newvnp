@@ -71,7 +71,13 @@ class Router
 		if(!empty($ParamsString)) {
 			$ExtractedParams = array();
 			$_ParamsArray = explode('/', $ParamsString);
-			if( sizeof($_ParamsArray) % 2 != 0 ) array_unshift($_ParamsArray, ROUTER_EXTRA_KEY);
+			//if( sizeof($_ParamsArray) % 2 != 0 ) array_unshift($_ParamsArray, ROUTER_EXTRA_KEY);
+			if( sizeof($_ParamsArray) % 2 != 0 ) {
+				$LastElement = array_pop($_ParamsArray);
+				$_ParamsArray[] = ROUTER_EXTRA_KEY;
+				$_ParamsArray[] = $LastElement;
+				//array_unshift($_ParamsArray, ROUTER_EXTRA_KEY);
+			}
 			if(!empty($_ParamsArray)) {
 				$KeyIndex = 0;
 				while(isset($_ParamsArray[$KeyIndex])) {

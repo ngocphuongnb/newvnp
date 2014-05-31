@@ -16,13 +16,42 @@
     <body>
     	<div class="container-fluid">
         	<div class="row" id="AdminBoard">
+            	<header>
+                	<a href="<?php echo BASE_DIR ?>" class="VNP_Logo"></a>
+                </header>
             	<?php echo $Hook['before_body'] ?>
-            	<div class="col-xs-6 col-md-4" id="left-sidebar" role="navigation">
-                	<ul id="admin-functions">
-                    	
+            	<div class="col-md-2" id="VNP_LeftBar" role="navigation">
+                	<ul id="AdminMenus">
+                    	<li><a href="<?php echo BASE_DIR ?>">Main board</a></li>
+                        <li><a href="<?php echo BASE_DIR ?>NodeBuilderGUI/">Node builder</a></li>
+                        <li><a href="<?php echo BASE_DIR ?>User/">User</a></li>
+                        <li><a href="<?php echo BASE_DIR ?>logout">Logout</a></li>
                     </ul>
                 </div>
-                <div class="col-xs-12 col-md-8 box" id="main-board">
+                <div class="col-md-10 box" id="main-board">
+                	<?php if(!empty($PageInfo) || !empty($FeaturedPanel)) { ?>
+                	<div class="FeaturedPanel clearfix">
+                        <?php if(!empty($PageInfo)) { ?>
+                        <span class="VNP_PageInfo"><?php echo $PageInfo ?></span>
+                        <?php } ?>
+                        <?php if(!empty($FeaturedPanel)) { ?>
+                        <ul class="FeaturedButtons">
+                            <?php foreach($FeaturedPanel as $FP) { ?>
+                            <li>
+                                <a href="<?php echo $FP['url'] ?>" title="<?php echo $FP['text'] ?>">
+                                    <span class="glyphicon glyphicon-<?php echo $FP['class'] ?>"></span>&nbsp;<?php echo $FP['text'] ?>
+                                </a>
+                            </li>
+                            <?php } ?>
+                        </ul>
+                        <?php } ?>
+                  	</div>
+                    <?php } ?>
+                	<?php foreach($Notify as $_notifyType) { ?>
+                    	<?php foreach($_notifyType as $_notify) { ?>
+                    		<div class="alert alert-<?php echo $_notify['type'] ?>"><?php echo $_notify['content'] ?></div>
+                       	<?php } ?>
+                    <?php } ?>
                 	<?php echo $BODY ?>
                 </div>
             </div>

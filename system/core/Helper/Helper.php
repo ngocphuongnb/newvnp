@@ -19,6 +19,8 @@ class Helper
 	static protected $UserState		= array();
 	static protected $Notification	= array();
 	static protected $PageHeader	= array();
+	static protected $FeaturedPanel	= array();
+	static protected $PageInfo		= '';
 	
 	public function __construct()
 	{
@@ -40,9 +42,35 @@ class Helper
 		Helper::$Notification[$Type][] = array('type' => $Type, 'content' => $Msg);
 	}
 	
+	static function NotifyCount($Type) {
+		if($Type == 'error') $Type = 'danger';
+		if(isset(Helper::$Notification[$Type])) return sizeof(Helper::$Notification[$Type]);
+		else return 0;
+	}
+	
+	static function PageInfo($Text)
+	{
+		Helper::$PageInfo = $Text;
+	}
+	
+	static function FeaturedPanel($Text, $Url = NULL, $Class = '')
+	{
+		is_array($Text) ? Helper::$FeaturedPanel += $Text :
+		Helper::$FeaturedPanel[] = array('text' => $Text, 'url' => $Url, 'class' => $Class);
+	}
+	
 	static function GetNotify()
 	{
+		Theme::AddCssComponent('Alerts');
 		return Helper::$Notification;
+	}
+	
+	static function GetFeaturedPanel() {
+		return Helper::$FeaturedPanel;
+	}
+	
+	static function GetPageInfo() {
+		return Helper::$PageInfo;
 	}
 	
 	static function NotifyLength($Type) {
