@@ -16,7 +16,7 @@ class article_category extends Controller {
   ),
   'var2' => 
   array (
-    'Value' => 'Enter url here',
+    'Value' => 'enter-title-here',
   ),
   'var3' => 
   array (
@@ -24,7 +24,7 @@ class article_category extends Controller {
   ),
   'var4' => 
   array (
-    'Value' => 'article_category',
+    'Value' => '',
   ),
 );
 		function PrepareOptions_vnpd8af29fe2fa7e61f1975893abfff36f7($Row) {

@@ -73,7 +73,7 @@ class Boot {
 		
 		DB::$Config		= G::$Config['DB']['main'];
 		G::$Error		= new ErrorHandler();
-		G::$RouteObj	= Router::Start(rtrim(BASE_DIR, '/'));
+		G::$RouteObj	= Router::Start(rtrim(BASE_DIR, '/'), CACHE_PATH . 'router' . DIRECTORY_SEPARATOR);
 		G::$Session		= new Session();
 		G::$User		= new User();
 		Theme::Config(array(
@@ -98,18 +98,18 @@ class Boot {
 		/* Ajax working Mapper */
 		Router::Map('Ajax_Controller',
 					'/ajax/[json|text|state:Ajax_Mod]/[:controller]/',
-					'ControllerSection', 'GET|POST' );
+					'ControllerSection', 'GET|POST', 2);
 		Router::Map('Ajax_ControllerAction',
 					'/ajax/[json|text|state:Ajax_Mod]/[:controller]/[:action]/',
-					'ControllerSection', 'GET|POST' );
+					'ControllerSection', 'GET|POST', 1);
 		Router::Map('Ajax_ControllerParams',
 					'/ajax/[json|text|state:Ajax_Mod]/[:controller]/[:action]/[*:params]/',
-					'ControllerSection', 'GET|POST' );
+					'ControllerSection', 'GET|POST', 0);
 		/* End ajax working Mapper */
 		
-		Router::Map('Controller', '/[:controller]/', 'ControllerSection', 'GET|POST' );
-		Router::Map('ControllerAction', '/[:controller]/[:action]/', 'ControllerSection', 'GET|POST' );
-		Router::Map('ControllerParams', '/[:controller]/[:action]/[*:params]/', 'ControllerSection', 'GET|POST' );
+		Router::Map('Controller', '/[:controller]/', 'ControllerSection', 'GET|POST', 5);
+		Router::Map('ControllerAction', '/[:controller]/[:action]/', 'ControllerSection', 'GET|POST', 4);
+		Router::Map('ControllerParams', '/[:controller]/[:action]/[*:params]/', 'ControllerSection', 'GET|POST', 3);
 	}
 	
 	static function Library($LibrariesUsing)

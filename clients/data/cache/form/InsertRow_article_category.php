@@ -6,10 +6,10 @@
  	</div>
 </div>
 <?php $Field = $Vars['var2']; ?>
-<div class="form-group FieldWrap FieldType_text Field_url RequiredField">
+<div class="form-group FieldWrap FieldType_url Field_url RequiredField">
 	<label class="col-sm-2 control-label" for="ID_Field[url]">Url<span class="RequireField">*</span></label>
     <div class="col-sm-10">
-		<input type="text" name="Field[url]" id="ID_Field[url]" class="form-control FieldType_text Field_url RequiredField" value="<?php echo $Field['Value'] ?>" />
+		<input type="" name="Field[url]" id="ID_Field[url]" class="form-control FieldType_url Field_url RequiredField" value="<?php echo $Field['Value'] ?>" />
  	</div>
 </div>
 <?php $Field = $Vars['var3']; ?>

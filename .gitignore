@@ -6,6 +6,11 @@
 
 /.settings
 /.clients/data/cache/*
+/.clients/data/cache/compiled
+/.clients/data/cache/form
+/.clients/data/cache/html
+/.clients/data/cache/router
 /.clients/data/session/*
 /.idea
 /.idea/*
+/.clients/data/session

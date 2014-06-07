@@ -115,13 +115,21 @@ class NodeUtility extends Controller {
 		if(Input::Post('SaveNodeSubmit') == 1) {
 			$FormValue = Input::Post('Field');
 			$CheckUnique = array();
+			Boot::Library('Filter');
 			foreach($this->NodeType['NodeFields'] as $Field) {
+				if(preg_match('/\[\@([a-zA-Z0-9_\-]+)\]/', $Field['value'], $MF)) {
+					if(isset($FormValue[$MF[1]]))
+						$FormValue[$Field['name']] = $FormValue[$MF[1]];
+					p($FormValue);
+				}
 				if($Field['require'] && (!isset($FormValue[$Field['name']]) || empty($FormValue[$Field['name']])))
 					Helper::Notify('error', $Field['label'] . ' Cannot be empty');
 				if($Field['db_config']['is_unique'])
 					$CheckUnique[$Field['name']] = $FormValue[$Field['name']];
-				if($Field['filter'])
-					$CheckUnique[$Field['name']] = $FormValue[$Field['name']];
+				if($Field['filter']) {
+					$FormValue[$Field['name']] = Filter::VariableFilter($Field['filter'], $FormValue[$Field['name']]);
+					//$CheckUnique[$Field['name']] = $FormValue[$Field['name']];
+				}
 			}
 			if(Helper::NotifyCount('error') == 0) {
 				$TableName = $this->NodeType['NodeTypeInfo']['name'];
