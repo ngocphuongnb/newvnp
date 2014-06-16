@@ -2,14 +2,14 @@
 <div class="form-group FieldWrap FieldType_text Field_title RequiredField">
 	<label class="col-sm-2 control-label" for="ID_Field[title]">Title<span class="RequireField">*</span></label>
     <div class="col-sm-10">
-		<input type="text" name="Field[title]" id="ID_Field[title]" class="form-control FieldType_text Field_title RequiredField" value="<?php echo $Field['Value'] ?>" />
+		<input type="text" name="Field[title]" id="ID_Field[title]" class="form-control FieldType_text Field_title RequiredField" value="<?php echo $FormValue['Field[title]']['value'] ?>" />
  	</div>
 </div>
 <?php $Field = $Vars['var2']; ?>
 <div class="form-group FieldWrap FieldType_url Field_url RequiredField">
 	<label class="col-sm-2 control-label" for="ID_Field[url]">Url<span class="RequireField">*</span></label>
     <div class="col-sm-10">
-		<input type="" name="Field[url]" id="ID_Field[url]" class="form-control FieldType_url Field_url RequiredField" value="<?php echo $Field['Value'] ?>" />
+		<input type="" name="Field[url]" id="ID_Field[url]" class="form-control FieldType_url Field_url RequiredField" value="<?php echo $FormValue['Field[url]']['value'] ?>" />
  	</div>
 </div>
 <?php $Field = $Vars['var3']; ?>

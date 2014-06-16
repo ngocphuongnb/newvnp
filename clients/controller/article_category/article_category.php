@@ -36,7 +36,6 @@ class article_category extends Controller {
 									->Columns(array('article_category_id','title'))
 									->Adapter('PrepareOptions_vnpd8af29fe2fa7e61f1975893abfff36f7')
 									->Get()->Result;
-		n($FormValue);
 		$Vars['var4']['Options'] = $vnpd8af29fe2fa7e61f1975893abfff36f7;
 		array_unshift($Vars['var4']['Options'], array('text' => 'Select', 'value' => ''));
 		ob_start();
