@@ -21,6 +21,7 @@ class NodeUtility extends Controller {
 	}
 	
 	public function InsertRow() {
+		Boot::Library('Filter');
 		$this->UseCssComponents('Glyphicons,Buttons,Labels,InputGroups');
 		$FormElements = array(	'text'		=> 'input',
 								'number'	=> 'input',
@@ -115,12 +116,10 @@ class NodeUtility extends Controller {
 		if(Input::Post('SaveNodeSubmit') == 1) {
 			$FormValue = Input::Post('Field');
 			$CheckUnique = array();
-			Boot::Library('Filter');
 			foreach($this->NodeType['NodeFields'] as $Field) {
 				if(preg_match('/\[\@([a-zA-Z0-9_\-]+)\]/', $Field['value'], $MF)) {
 					if(isset($FormValue[$MF[1]]))
 						$FormValue[$Field['name']] = $FormValue[$MF[1]];
-					p($FormValue);
 				}
 				if($Field['require'] && (!isset($FormValue[$Field['name']]) || empty($FormValue[$Field['name']])))
 					Helper::Notify('error', $Field['label'] . ' Cannot be empty');
@@ -159,6 +158,62 @@ class NodeUtility extends Controller {
 	}
 	
 	private function NodeControllerTemplate($NodeType, $VarArray = array(), $PrepareOptions = array()) {
+		$NodeFields = $this->NodeType['NodeFields'];
+		$PrepareFields = array();
+		$CheckUnique = array();
+		//Boot::Library('Filter');
+		foreach($this->NodeType['NodeFields'] as $Field) {
+			if(preg_match('/\[\@([a-zA-Z0-9_\-]+)\]/', $Field['value'], $MF)) {
+				$PrepareFields[] = '
+			if(isset($FormValue[\'' . $MF[1] . '\']))
+				$FormValue[\'' . $Field['name'] . '\'] = $FormValue[\'' . $MF[1] . '\'];';
+			}
+			if($Field['require']) {
+				$PrepareFields[] = '
+			if(!isset($FormValue[\'' . $Field['name'] . '\']) || empty($FormValue[\'' . $Field['name'] . '\']))
+				Helper::Notify(\'error\', \'' . $Field['label'] . ' Cannot be empty\');';
+			}
+			if($Field['filter']) {
+				$PrepareFields[] = '
+			$FormValue[\'' . $Field['name'] . '\'] = ' . Filter::FunctionBuilder($Field['filter'], '$FormValue[\'' . $Field['name'] . '\']') . ';';
+				//$CheckUnique[$Field['name']] = $FormValue[$Field['name']];
+			}
+			if($Field['db_config']['is_unique'])
+				$CheckUnique[] = $Field['name'];
+		}
+			
+			
+			
+			
+		$PrepareFields[] = '
+			if(Helper::NotifyCount(\'error\') == 0) {
+				$CheckUnique = array();
+				$NodeExisted = false;';
+		if(!empty($CheckUnique)) {
+			$PrepareFields[] = '
+				$CheckExisted = DB::Query(\'' . $this->NodeType['NodeTypeInfo']['name'] . '\')->WhereGroupOpen();';
+			$i = 0;
+			foreach($CheckUnique as $FField) {
+				if($i > 0) $PrepareFields[] = '$CheckExisted = $CheckExisted->_OR();';
+				$PrepareFields[] = '
+				$CheckExisted = $CheckExisted->Where(\'' . $FField . '\', \'=\', $FormValue[\'' . $FField . '\']);';
+				$i++;					
+			}
+			$PrepareFields[] = '
+				$CheckExisted = $CheckExisted->WhereGroupClose();
+				$CheckExisted = $CheckExisted->Get();
+				if($CheckExisted->num_rows > 0) $NodeExisted = true;';
+		}
+		$PrepareFields[] = '
+				if(!$NodeExisted) {
+					$NodeQuery = DB::Query(\'' . $this->NodeType['NodeTypeInfo']['name'] . '\')->Insert($FormValue);
+					($NodeQuery->status && $NodeQuery->insert_id > 0) ? Helper::Notify(\'success\', \'Successful add node in ' . $this->NodeType['NodeTypeInfo']['title'] . '\') : Helper::Notify(\'error\', \'Cannot add node in ' . $this->NodeType['NodeTypeInfo']['title'] . '\');
+				}
+				else Helper::Notify(\'error\', \'Cannot add node in ' . $this->NodeType['NodeTypeInfo']['title'] . '. Be sure that <em>' . implode(', ', $CheckUnique) . '</em> didn\\\'t existed!\');
+			}';
+		$PrepareFields[] = '
+			return $FormValue;';
+
 		$TPL = '<?php
 
 class ' . $NodeType . ' extends Controller {
@@ -169,13 +224,26 @@ class ' . $NodeType . ' extends Controller {
 	public function Main() {
 	}
 	public function InsertRow() {
+		$FormValue = $this->SaveNodeAction();
 		$this->UseCssComponents(\'Glyphicons,Buttons,Labels,InputGroups\');
 		$Vars = ' . var_export($VarArray, true) . ';
 		' . implode(PHP_EOL . "\t\t", $PrepareOptions) . '
 		ob_start();
+		echo \'<form class="form-horizontal" action="" method="post">\';
+		echo \'<input type="hidden" name="SaveNodeSubmit" value="1"/>\';
 		include Form::$CompiledPath . \'InsertRow_' . $NodeType . '.php\';
+		echo \'<div style="text-align:center;margin-top:10px"><input type="submit" class="btn btn-primary" value="Save"/></div>\';
+		echo \'</form>\';
 		$Form = ob_get_clean();
 		$this->Render($Form);		
+	}
+	
+	public function SaveNodeAction() {
+		if(Input::Post(\'SaveNodeSubmit\') == 1) {
+			$FormValue = Input::Post(\'Field\');
+			Boot::Library(\'Filter\');' .
+			implode(PHP_EOL, $PrepareFields). '
+		}
 	}
 }';
 		if(!file_exists(CONTROLLER_PATH . $NodeType))

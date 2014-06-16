@@ -74,6 +74,23 @@ class Filter
 		}
 		return $Variable;
 	}
+	
+	static function FunctionBuilder($FunctionString, $VariableName) {
+		$Functions = array_filter(explode('|', $FunctionString));
+		$ReturnFunction = $VariableName;
+		foreach($Functions as $Function) {
+			if(preg_match('/([^:]+):([^:]+)/', $Function, $M)) {
+				$M[2] = explode(',', $M[2]);
+				$Ps = array();
+				foreach($M[2] as $P) $Ps[] = "'" . addslashes($P) . "'";
+				$M[2] = implode(',', $Ps);
+				$M[2] = str_replace("'[THIS_FIELD_VALUE]'", $ReturnFunction, $M[2]);
+				$ReturnFunction = $M[1] . '(' . $M[2] . ')';
+			}
+			else $ReturnFunction = $Function . '(' . $ReturnFunction . ')';
+		}
+		return $ReturnFunction;
+	}
 }
 
 ?>

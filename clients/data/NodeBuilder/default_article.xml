@@ -45,7 +45,7 @@
       <Field name="url" type="url" inform="1">
         <Label>Url</Label>
         <Require>1</Require>
-        <Filter>Filter::CleanUrlString|str_replace:'haha','hihi',[THIS_FIELD_VALUE]</Filter>
+        <Filter>Filter::CleanUrlString|str_replace:haha,hihi,[THIS_FIELD_VALUE]</Filter>
         <Value/>
         <DB>
           <Type/>

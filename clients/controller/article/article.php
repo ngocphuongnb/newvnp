@@ -8,6 +8,7 @@ class article extends Controller {
 	public function Main() {
 	}
 	public function InsertRow() {
+		$FormValue = $this->SaveNodeAction();
 		$this->UseCssComponents('Glyphicons,Buttons,Labels,InputGroups');
 		$Vars = array (
   'var1' => 
@@ -70,5 +71,58 @@ class article extends Controller {
 		include Form::$CompiledPath . 'InsertRow_article.php';
 		$Form = ob_get_clean();
 		$this->Render($Form);		
+	}
+	
+	public function SaveNodeAction() {
+		if(Input::Post('SaveNodeSubmit') == 1) {
+			$FormValue = Input::Post('Field');
+			Boot::Library('Filter');
+			if(!isset($FormValue['title']) || empty($FormValue['title']))
+				Helper::Notify('error', 'Title Cannot be empty');
+
+			$FormValue['title'] = Utf8TrueType($FormValue['title']);
+
+			if(!isset($FormValue['url']) || empty($FormValue['url']))
+				Helper::Notify('error', 'Url Cannot be empty');
+
+			$FormValue['url'] = str_replace('haha','hihi',Filter::CleanUrlString($FormValue['url']));
+
+			if(!isset($FormValue['description']) || empty($FormValue['description']))
+				Helper::Notify('error', 'Description Cannot be empty');
+
+			if(!isset($FormValue['body']) || empty($FormValue['body']))
+				Helper::Notify('error', 'Content Cannot be empty');
+
+			if(!isset($FormValue['status']) || empty($FormValue['status']))
+				Helper::Notify('error', 'Status Cannot be empty');
+
+			if(!isset($FormValue['author']) || empty($FormValue['author']))
+				Helper::Notify('error', 'Color Cannot be empty');
+
+			$FormValue['new_field'] = Utf8TrueType($FormValue['new_field']);
+
+			if(!isset($FormValue['main_catid']) || empty($FormValue['main_catid']))
+				Helper::Notify('error', 'Main category Cannot be empty');
+
+			if(Helper::NotifyCount('error') == 0) {
+				$CheckUnique = array();
+				$NodeExisted = false;
+
+				$CheckExisted = DB::Query('article')->WhereGroupOpen();
+
+				$CheckExisted = $CheckExisted->Where('url', '=', $FormValue['url']);
+
+				$CheckExisted = $CheckExisted->WhereGroupClose();
+				$CheckExisted = $CheckExisted->Get();
+				if($CheckExisted->num_rows > 0) $NodeExisted = true;
+
+				if(!$NodeExisted) {
+					$NodeQuery = DB::Query('article')->Insert($FormValue);
+					($NodeQuery->status && $NodeQuery->insert_id > 0) ? Helper::Notify('success', 'Successful add node in Article') : Helper::Notify('error', 'Cannot add node in Article');
+				}
+				else Helper::Notify('error', 'Cannot add node in Article. Be sure that <em>url</em> didn\'t existed!');
+			}
+return $FormValue;
+		}
 	}
 }
