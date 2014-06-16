@@ -20,6 +20,8 @@ class DBWrapper
 	public $ErrorDesc		= '';
 	public $Error			= array();
 	
+	public $Adapter		= '';
+	
 	/**
 	 * @Where - Storage variable for search condition with group name
 	 */
@@ -315,6 +317,12 @@ class DBWrapper
 		}
 	}
 	
+	public function Adapter($Adapter)
+	{
+		$this->Adapter = $Adapter;
+		return $this;
+	}
+	
 	/**
 	 * Group conditions for custom logic
 	 *
@@ -326,6 +334,17 @@ class DBWrapper
 	{
 		$this->Where[] = '(';
 		call_user_func($CallBackFunction, $this);
+		$this->Where[] = ')';
+		return $this;
+	}
+	
+	public function WhereGroupOpen()
+	{
+		$this->Where[] = '(';
+		return $this;
+	}
+	public function WhereGroupClose()
+	{
 		$this->Where[] = ')';
 		return $this;
 	}
@@ -560,6 +579,8 @@ class DBWrapper
 	
 	public function CustomQuery($sql)
 	{
+		$sql = str_replace(PHP_EOL, ' ', $sql);
+		$sql = preg_replace('/\s+/', ' ', $sql);
 		if(!$this->IsConnected) $this->Connect();
 
 		$_qr = $this->Obj->query($sql);
@@ -592,8 +613,10 @@ class DBWrapper
 		{
 			$x = array();
 			//foreach( $row as $key => $val ) $x[$key] =  stripslashes($val);
-			foreach( $row as $key => $val ) $x[$key] =  html_entity_decode(stripslashes($val), ENT_QUOTES,'UTF-8');
+			foreach( $row as $key => $val )
+				$x[$key] =  html_entity_decode(stripslashes($val), ENT_QUOTES,'UTF-8');
 			
+			if(!empty($this->Adapter)) $x = call_user_func($this->Adapter, $x);
 			if( $FieldKey != '' && isset($x[$FieldKey ])) $results[$x[$FieldKey]] = $x;
 			else array_push($results, $x);
 		}

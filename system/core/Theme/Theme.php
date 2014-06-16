@@ -17,11 +17,11 @@ if( !defined('VNP_SYSTEM') && !defined('VNP_APPLICATION') ) die('Access denied!'
 class Theme
 {
 	static $BaseDir;
-	static $CurrentTheme;
+	static $Theme;
 	static $Title;
 	static $MetaTags = array();
 	static $Layout;
-	static $Body;
+	static $BodyContent;
 	static $CssComponents		= array();
 	static $AjaxCssComponents	= array();
 	
@@ -41,92 +41,91 @@ class Theme
 	static $AjaxCssFooter = array();
 	
 	static $ThemeVariables = array();
+	static $Config = array();
+	static $Working = array();
+	static $FeaturedPanel = array();
+	static $AjaxSession = false;
 	
 	public function __construct()
 	{
 	}
 	
-	static function SetLayout($Layout)
-	{
-		Theme::$Layout = $Layout;
+	/*static function Assign($Name, $Value = NULL) {
+		is_array($Name) ? Theme::$VNP_ThemeVariables = array_merge(Theme::$VNP_ThemeVariables, $Name)
+						: Theme::$VNP_ThemeVariables[$Name] = $Value;
+	}*/
+	
+	static function Config($ConfigArray = array()) {
+		Theme::$Config = array(	'theme_root'		=> dirname(__FILE__),
+								'default_theme'		=> 'vnp',
+								'default_layout'	=> 'left.body',
+								'theme'				=> '',
+								'layout'			=> '',
+								're_compile'		=> false,
+								'is_cache'			=> ''
+							);
+		Theme::$Config = array_merge(Theme::$Config, $ConfigArray);
+		if(Theme::$Config['theme'] == '') Theme::$Config['theme'] = Theme::$Config['default_theme'];
+		if(Theme::$Config['layout'] == '') Theme::$Config['layout'] = Theme::$Config['default_layout'];
+		Theme::$Working = Theme::$Config;
+		Theme::$Title = 'VNP FW';
+		Theme::$MetaTags['title'] = 'VNP FW';
 	}
 	
-	static function SetTitle($Title)
-	{
+	static function SetLayout($Layout) {
+		Theme::$Config['layout'] = $Layout;
+	}	
+	static function Layout($Layout) {
+		Theme::$Config['layout'] = $Layout;
+	}	
+	static function SetTitle($Title) {
 		Theme::$Title = $Title;
-	}
-	
-	static function MetaTag($Name, $Content)
-	{
+	}	
+	static function MetaTag($Name, $Content) {
 		Theme::$MetaTags[$Name] = $Content;
-	}
-	
-	static function ResetCssComponent()
-	{
+	}	
+	static function ResetCssComponent() {
 		Theme::$CssComponents = array();
-	}
-	
-	static function AddCssComponent($Components = '')
-	{
+	}	
+	static function AddCssComponent($Components = '') {
 		if(!empty($Components))
 			if(defined('IS_AJAX'))
-				Theme::$AjaxCssComponents = array_merge(Theme::$AjaxCssComponents, array_unique(explode(',', $Components)));
+				Theme::$AjaxCssComponents = array_unique(array_merge(Theme::$AjaxCssComponents, explode(',', $Components)));
 			else
-				Theme::$CssComponents = array_merge(Theme::$CssComponents, array_unique(explode(',', $Components)));
-	}
-	
-	static function Assign($variable, $value = NULL)
-	{
+				Theme::$CssComponents = array_unique(array_merge(Theme::$CssComponents, explode(',', $Components)));
+	}	
+	static function Assign($variable, $value = NULL) {
 		if(is_array($variable)) Theme::$ThemeVariables += $variable;
 		else Theme::$ThemeVariables[$variable] = $value;
-	}
-	
-	static function Prepare()
-	{
-		Theme::JsHeader('VNP_Object', 'var VNP = new BaseObject("' . $BaseUrl . '");', 'inline');
-		Theme::$Hook['header'] = Theme::GetJs('JsHeader');
-		Theme::$Hook['header'] .= Theme::GetCss('CssHeader');
-		Theme::$Hook['footer'] = Theme::GetJs('JsFooter');
-		Theme::$Hook['footer'] .= Theme::GetCss('CssFooter');
-	}
-	
-	static function JsHeader($Name, $JsString, $Type = 'file')
-	{
+	}	
+	static function JsHeader($Name, $JsString, $Type = 'file') {
 		if(defined('IS_AJAX'))
 			Theme::$AjaxJsHeader[$Name] = array('js_string' => $JsString, 'type' => $Type);
 		else
 			Theme::$JsHeader[$Name] = array('js_string' => $JsString, 'type' => $Type);
 	}
-	
-	static function JsFooter($Name, $JsString, $Type = 'file')
-	{
+	static function JsFooter($Name, $JsString, $Type = 'file') {
 		if(defined('IS_AJAX'))
 			Theme::$AjaxJsFooter[$Name] = array('js_string' => $JsString, 'type' => $Type);
 		else
 			Theme::$JsFooter[$Name] = array('js_string' => $JsString, 'type' => $Type);
 	}
 	
-	static function CssHeader($Name, $CssString, $Type = 'file')
-	{
+	static function CssHeader($Name, $CssString, $Type = 'file') {
 		if(defined('IS_AJAX'))
 			Theme::$AjaxCssHeader[$Name] = array('css_string' => $CssString, 'type' => $Type);
 		else
 			Theme::$CssHeader[$Name] = array('css_string' => $CssString, 'type' => $Type);
-	}
-	
-	static function CssFooter($Name, $CssString, $Type = 'file')
-	{
+	}	
+	static function CssFooter($Name, $CssString, $Type = 'file') {
 		if(defined('IS_AJAX'))
 			Theme::$AjaxCssFooter[$Name] = array('css_string' => $CssString, 'type' => $Type);
 		else
 			Theme::$CssFooter[$Name] = array('css_string' => $CssString, 'type' => $Type);
 	}
-	
-	static function GetJs($Area = 'JsHeader')
-	{
+	static function GetJs($Area = 'JsHeader') {
 		$Return = array();
-		foreach(Theme::$$Area as $Js)
-		{
+		foreach(Theme::$$Area as $Js) {
 			if($Js['type'] == 'file')
 				$Return[] = '<script type="text/javascript" src="' . $Js['js_string'] . '"></script>';
 			else
@@ -134,40 +133,67 @@ class Theme
 		}
 		return implode(PHP_EOL, $Return);
 	}
-	
-	static function GetCss($Area = 'CssHeader')
-	{
+	static function GetCss($Area = 'CssHeader') {
 		$Return = array();
-		foreach(Theme::$$Area as $Css)
-		{
+		foreach(Theme::$$Area as $Css) {
 			if($Css['type'] == 'file')
 				$Return[] = '<link rel="stylesheet" type="text/css" href="' . $Css['css_string'] . '"/>';
 		}
 		return implode(PHP_EOL, $Return);
 	}
-	
-	static function GenerateCssComponents($VariableName)
-	{
+	static function GenerateCssComponents($VariableName) {
 		$GeneratedStyleSheet = array();
-		foreach(Theme::$$VariableName as $_c)
-		{
+		foreach(Theme::$$VariableName as $_c) {
 			$_c = trim($_c);
-			$GeneratedStyleSheet[] = '<link rel="stylesheet" type="text/css" href="' . DATA_DIR . 'library/bootstrap/' . $_c . '/css/bootstrap.min.css" />';
+			$GeneratedStyleSheet[] = '<link rel="stylesheet" type="text/css" href="' . GLOBAL_DATA_DIR . 'library/bootstrap/' . $_c . '/css/bootstrap.min.css" />';
 		}
 		return implode(PHP_EOL, $GeneratedStyleSheet);
-	}
-	
-	static function UseJquery($Version = '1.8.3')
-	{
+	}	
+	static function UseJquery($Version = '1.8.3') {
 		if(!isset(Theme::$JsHeader['jquery-' . $Version]))
-			Theme::JsHeader('jquery-' . $Version, DATA_DIR . 'library/jquery-' . $Version . '.min.js');
+			Theme::JsHeader('jquery-' . $Version, GLOBAL_DATA_DIR . 'library/jquery-' . $Version . '.min.js');
+	}	
+	static function JqueryUI($Component, $Version = '1.10.4', $JqueryVersion = '1.8.3') {
+		if(!isset(Theme::$JsHeader['jquery-' . $JqueryVersion]))
+			Theme::JsHeader('jquery-' . $JqueryVersion, GLOBAL_DATA_DIR . 'library/jquery-' . $JqueryVersion . '.min.js');
+		Theme::JsHeader('jqueryUI-' . $Version . '-' . $Component, GLOBAL_DATA_DIR . 'library/jquery-ui/jquery-ui-' . $Version . '.' . $Component . '.min.js');
 	}
 	
-	static function JqueryUI($Component, $Version = '1.10.4', $JqueryVersion = '1.8.3')
-	{
-		if(!isset(Theme::$JsHeader['jquery-' . $JqueryVersion]))
-			Theme::JsHeader('jquery-' . $JqueryVersion, DATA_DIR . 'library/jquery-' . $JqueryVersion . '.min.js');
-		Theme::JsHeader('jqueryUI-' . $Version . '-' . $Component, DATA_DIR . 'library/jquery-ui/jquery-ui-' . $Version . '.' . $Component . '.min.js');
+	static function PrepareTheme() {
+		TPL::Config(	BASE_DIR,
+						Theme::$Config['theme_root'] . Theme::$Working['theme'] . DIRECTORY_SEPARATOR,
+						CACHE_PATH . 'compiled' . DIRECTORY_SEPARATOR,
+						CACHE_PATH . 'html' . DIRECTORY_SEPARATOR,
+						CACHE_PATH . 'compiled' . DIRECTORY_SEPARATOR
+					);
+	}
+	static function PrepareVariables() {
+		Theme::JsFooter('JsBaseFunctions', APPLICATION_DATA_DIR . 'js/base.js');
+		Theme::JsFooter('VNP_Object', 'var VNP = new BaseObject("' . BASE_DIR . '");', 'inline');
+		Theme::$Hook['header'] = Theme::GetJs('JsHeader');
+		Theme::$Hook['header'] .= Theme::GetCss('CssHeader');
+		Theme::$Hook['footer'] = Theme::GetJs('JsFooter');
+		Theme::$Hook['footer'] .= Theme::GetCss('CssFooter');
+		Theme::Assign('Notify', Helper::GetNotify());
+		Theme::Assign('FeaturedPanel', Helper::GetFeaturedPanel());
+		Theme::Assign('PageInfo', Helper::GetPageInfo());
+	}	
+	static function Output() {
+		if(in_array(Theme::$AjaxSession, array('text', 'json'))) {
+			echo Theme::$BodyContent;
+			exit();
+		}
+		else {
+			Theme::PrepareTheme();
+			Theme::PrepareVariables();
+			$Output = TPL::File(Theme::$Working['layout'], Theme::$Working['re_compile'], Theme::$Working['is_cache']);
+			$Output->Assign(Theme::$ThemeVariables);
+			$Output->Assign('META', Theme::$MetaTags);
+			$Output->Assign('CssComponents', Theme::GenerateCssComponents('CssComponents'));
+			$Output->Assign('Hook', Theme::$Hook);
+			$Output->Assign('BODY', Theme::$BodyContent);
+			$Output->Output(false);
+		}
 	}
 }
 

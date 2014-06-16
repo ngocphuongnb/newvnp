@@ -66,7 +66,6 @@ class VTE
 		$this->ReCompile = $ReCompile;
 		$this->IsCache = $IsCache;
 		$this->TPLFileName = $TPLFile;
-		$this->InputTPLString = $this->ReadTPLFile();
 		return $this;
 	}
 	
@@ -75,7 +74,8 @@ class VTE
 		return $this;
 	}
 	
-	public function Output($Return = false, $ReturnCompiled = false) {
+	public function Output($Return = true, $ReturnCompiled = false) {
+		if($this->TPLFileName != '') $this->InputTPLString = $this->ReadTPLFile();
 		$TPLFileName = rtrim(basename($this->TPLFilePath), $this->TPLFileExt);
 		$EncodedFileName = $TPLFileName . '_' . md5($this->TPLFilePath);
 		$this->CompiledFilePath = $this->_CompiledDir . $EncodedFileName . '.php';
@@ -118,8 +118,8 @@ class VTE
 			return file_get_contents($this->TPLFilePath);
 		}
 		else {
-			throw new VTE_Exception ('TPL file not found ' . $this->TPLFileName);
-			trigger_error('TPL file not found ' . $this->TPLFileName);
+			throw new VTE_Exception ('TPL file not found ' . $this->TPLFilePath);
+			trigger_error('TPL file not found ' . $this->TPLFilePath);
 		}
 	}
 	
@@ -158,15 +158,22 @@ class VTE
 		//variable path
 		$VariablePath = substr( $Var, strlen( $VarName ) );
 		//parentesis transform [ e ] in [" e in "]
-		$VariablePath = str_replace( '[', "['", $VariablePath );
-		$VariablePath = str_replace( ']', "']", $VariablePath );
+		if(preg_match_all('/' . '(.*)\[\$(.*)\](.*)' . '/', $VariablePath, $matches)) {
+			$VariablePath = '[$' . $this->VariableTrueForm($matches[2][0]) . ']';
+		}
+		else {
+			$VariablePath = str_replace( '[', "['", $VariablePath );
+			$VariablePath = str_replace( ']', "']", $VariablePath );
+		}
 		//transform .$variable in ["$variable"] and .variable in ["variable"]
 		$VariablePath = preg_replace('/\.(\${0,1}\w+)/', "['\\1']", $VariablePath );
 		return $VarName . $VariablePath;
 	}
 	
 	private function CompileFunction($Code, $echo = false) {
-		if(preg_match_all('/' . '\{\#{0,1}(\"{0,1}.*?\"{0,1})(\|\w.*?)\#{0,1}\}' . '/', $Code, $matches)) {
+		//if(preg_match_all('/' . '\{\#{0,1}(\"{0,1}.*?\"{0,1})(\|\w.*?)\#{0,1}\}' . '/', $Code, $matches)) {
+		//if(preg_match_all('/' . '\{(\#{0,1}\${0,1}[a-zA-Z0-9\_]*?)(\|\${0,1}\w.*?)\}' . '/', $Code, $matches)) {
+		if(preg_match_all('/' . '\{(\#{0,1}\${0,1}\w+(?:\.\${0,1}[A-Za-z0-9_]+)*(?:(?:\[\${0,1}[A-Za-z0-9_]+\])|(?:\-\>\${0,1}[A-Za-z0-9_]+))*?)(\|\${0,1}\w.*?)\}' . '/', $Code, $matches)) {
 			$Parsed = array();
 			$TotalTags = count($matches[0]);
 			for($i = 0; $i < $TotalTags; $i++) {
@@ -209,24 +216,32 @@ class VTE
 					}
 				}
 				else {
-				
 					if($Tag['ExtraFunction'] && $Tag['ExtraFunction'][0] == '|') {
-						$Tag['ExtraFunction'] = ltrim($Tag['ExtraFunction'], '|');
-						//Check Static Class method
-						if(strpos($Tag['ExtraFunction'], '::') != NULL)
-							$Tag['ExtraFunction'] = str_replace('::', '@@StaticClassMethodSignal@@', $Tag['ExtraFunction']);
-						if(strpos($Tag['ExtraFunction'], ':') != NULL) {
-							$_f = explode(':', $Tag['ExtraFunction']);
-							$Tag['FunctionName']	= $_f[0];
-							$Tag['FunctionParams']	= $_f[1];
+						$ExtraFunctions = array_filter(explode('|', $Tag['ExtraFunction']));
+						$PhpCompiled = '';
+						$i = 0;
+						foreach($ExtraFunctions as $ExtraFunction) {
+							if($i == 0) $VariableName	= $this->VariableTrueForm(trim($Tag['VariableName']));
+							else $VariableName = $PhpCompiled;
+							$Tag['ExtraFunction'] = $ExtraFunction;
+							//Check Static Class method
+							if(strpos($Tag['ExtraFunction'], '::') != NULL)
+								$Tag['ExtraFunction'] = str_replace('::', '@@StaticClassMethodSignal@@', $Tag['ExtraFunction']);
+							if(strpos($Tag['ExtraFunction'], ':') != NULL) {
+								$_f = explode(':', $Tag['ExtraFunction']);
+								$Tag['FunctionName']	= $_f[0];
+								$Tag['FunctionParams']	= $_f[1];
+							}
+							else $Tag['FunctionName'] = $Tag['ExtraFunction'];
+							
+							$Tag['FunctionName'] = str_replace('@@StaticClassMethodSignal@@', '::', $Tag['FunctionName']);
+							$FunctionName	= trim($Tag['FunctionName']);
+							
+							$ExtraParams	= $Tag['FunctionParams'];
+							$PhpCompiled	= (!empty($ExtraParams) ? "$FunctionName($VariableName,$ExtraParams)" : "$FunctionName($VariableName)");
+							$i++;
 						}
-						else $Tag['FunctionName'] = $Tag['ExtraFunction'];
-						
-						$Tag['FunctionName'] = str_replace('@@StaticClassMethodSignal@@', '::', $Tag['FunctionName']);
-						$FunctionName	= trim($Tag['FunctionName']);
-						$VariableName	= $this->VariableTrueForm(trim($Tag['VariableName']));
-						$ExtraParams	= $Tag['FunctionParams'];
-						$PhpCompiled = ($echo ? 'echo ' : NULL) . (!empty($ExtraParams) ? "$FunctionName($VariableName,$ExtraParams)" : "$FunctionName($VariableName)");
+						$PhpCompiled = ($echo ? 'echo ' : NULL) . $PhpCompiled;
 						$PhpCompiled = '<?php ' . $PhpCompiled . ' ?>';
 						$Code = str_replace($Tag['key'], $PhpCompiled, $Code);
 					}
@@ -349,8 +364,8 @@ class VTE
 			}
 			//elseif
 			elseif( preg_match($CheckCommand['elseif'], $Html, $Code ) ){
-				$tag = $code[0];
-				$condition = $code[1];
+				$tag = $Code[0];
+				$condition = $Code[1];
 				$parsed_condition = $this->CompileCondition($condition, false);
 				$CompiledCode[] =   "<?php } elseif($parsed_condition) { ?>";
 			}
@@ -369,10 +384,10 @@ class VTE
 				$ArrayElement = $this->VariableTrueForm('$' . $Code['ArrayElement']);
 				if(isset($Code['ArrayKey'])) {
 					$ArrayKey = $this->VariableTrueForm('$' . $Code['ArrayKey']);
-					$CompiledCode[] = "<?php foreach( $Array as $ArrayKey => $ArrayElement) { ?>";
+					$CompiledCode[] = "<?php foreach($Array as $ArrayKey => $ArrayElement) { ?>";
 				}
 				else
-					$CompiledCode[] = "<?php foreach( $Array as $ArrayElement) { ?>";
+					$CompiledCode[] = "<?php foreach($Array as $ArrayElement) { ?>";
 			}
 			//close For tag
 			elseif( strpos( $Html, '{/for}' ) !== FALSE ) {

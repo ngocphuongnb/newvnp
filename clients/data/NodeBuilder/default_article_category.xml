@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<NodeTypes>
+  <NodeType name="article_category">
+    <Info>
+      <Title>Article Category</Title>
+      <Author>Nguyen Ngoc Phuong</Author>
+      <Require>
+        <Node/>
+      </Require>
+      <DB>
+        <Engine>MyISAM</Engine>
+        <CollateKey>utf8</CollateKey>
+        <Collate>utf8_unicode_ci</Collate>
+        <AutoIncrement>0</AutoIncrement>
+      </DB>
+    </Info>
+    <Fields>
+      <Field name="title" type="text" inform="1">
+        <Label>Title</Label>
+        <Require>1</Require>
+        <Filter/>
+        <Value>Enter title here</Value>
+        <DB>
+          <Type>VARCHAR</Type>
+          <Length>255</Length>
+          <Collation>utf8_unicode_ci</Collation>
+          <AutoIncrement/>
+          <IsUnique>1</IsUnique>
+        </DB>
+      </Field>
+      <Field name="url" type="url" inform="1">
+        <Label>Url</Label>
+        <Require>1</Require>
+        <Filter>Filter::CleanUrlString|str_replace:haha,hihi,[THIS_FIELD_VALUE]</Filter>
+        <Value>[@title]</Value>
+        <DB>
+          <Type/>
+          <Length/>
+          <Collation/>
+          <IsUnique>1</IsUnique>
+        </DB>
+      </Field>
+      <Field name="description" type="textarea" inform="1">
+        <Label>Description</Label>
+        <Require>0</Require>
+        <Filter/>
+        <Value/>
+        <DB>
+          <Type/>
+          <Length/>
+          <Collation/>
+          <AutoIncrement/>
+          <IsUnique/>
+        </DB>
+      </Field>
+      <Field name="parent_category" type="referer" inform="1">
+        <Label>Parent category</Label>
+        <Require>0</Require>
+        <Filter/>
+        <Value>article_category</Value>
+        <Referer node_type="article_category" node_field="title" display="single_selectbox"/>
+        <DB>
+          <Type/>
+          <Length/>
+          <Collation/>
+          <AutoIncrement/>
+          <IsUnique/>
+        </DB>
+      </Field>
+    </Fields>
+  </NodeType>
+</NodeTypes>

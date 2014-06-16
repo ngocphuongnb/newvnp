@@ -21,6 +21,7 @@ else {
 }
 
 define('CDN_SERVER', 'http://static.npcdn.com');
+define('STATIC_FILE_DIR', '/data/');
 
 define('APPLICATION_BASE', SITE_BASE . APPLICATION_DIR . '/');
 define('APPLICATION_PATH', BASE_PATH . APPLICATION_DIR . '/');

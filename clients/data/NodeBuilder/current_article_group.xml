@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<NodeTypes>
+  <NodeType name="article_group">
+    <Info>
+      <Title>Article Group</Title>
+      <Author>Nguyen Ngoc Phuong</Author>
+      <Require>
+        <Node/>
+      </Require>
+      <DB>
+        <Engine/>
+        <CollateKey/>
+        <Collate/>
+        <AutoIncrement/>
+      </DB>
+    </Info>
+    <Fields>
+      <Field name="title" type="text" inform="1">
+        <Label>Title</Label>
+        <Require>1</Require>
+        <Filter>Utf8TrueType</Filter>
+        <Value>Enter title here</Value>
+        <DB>
+          <Type>varchar</Type>
+          <Length>255</Length>
+          <Collation>utf8_unicode_ci</Collation>
+          <AutoIncrement/>
+        </DB>
+      </Field>
+      <Field name="url" type="text" inform="1">
+        <Label>Url</Label>
+        <Require>1</Require>
+        <Filter>Helper|CleanUrlString</Filter>
+        <Value>Enter url here</Value>
+        <DB/>
+      </Field>
+      <Field name="description" type="textarea" inform="1">
+        <Label>Description</Label>
+        <Require>1</Require>
+        <Filter/>
+        <Value/>
+        <DB/>
+      </Field>
+    </Fields>
+  </NodeType>
+</NodeTypes>
